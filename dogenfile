@@ -1,0 +1,6 @@
+Project: stask
+Author: Bowuigi
+License: Zlib
+Description: Simple Task format, includes a read/write library and a CLI pretty printer (as a client)
+Dict name: Tables
+Output file: stask-lib-docs.md

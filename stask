@@ -1,0 +1,67 @@
+#!/usr/bin/env lua
+
+-- Reference stask viewer using the stask library
+-- (C) Bowuigi 2021
+--
+--	zlib License
+--
+--	(C) 2021 Bowuigi
+--
+--	This software is provided 'as-is', without any express or implied
+--	warranty.  In no event will the authors be held liable for any damages
+--	arising from the use of this software.
+--
+--	Permission is granted to anyone to use this software for any purpose,
+--	including commercial applications, and to alter it and redistribute it
+--	freely, subject to the following restrictions:
+--
+--	1. The origin of this software must not be misrepresented; you must not
+--	   claim that you wrote the original software. If you use this software
+--	   in a product, an acknowledgment in the product documentation would be
+--	   appreciated but is not required.
+--	2. Altered source versions must be plainly marked as such, and must not be
+--	   misrepresented as being the original software.
+--	3. This notice may not be removed or altered from any source distribution.
+
+st = require("stask-lib")
+
+-- ANSI escape secuences to display colors on compatible terminals
+ansi = {
+	normal = "\027[0m",
+	red = "\027[1;31m",
+	green = "\027[1;32m",
+	yellow = "\027[1;33m",
+	blue = "\027[1;34m",
+	cyan = "\027[1;36m"
+}
+
+-- Parse a tasks file, panic on error
+tasks = st.read(arg[1] or "tasks.st")
+if not tasks then io.stderr:write("File not found\n") os.exit(1) end
+
+-- Graphics
+for i, t in ipairs(tasks) do
+	-- Task status
+	io.write(st.switch(t.status,{
+		c = ansi.green.."[x]";
+		p = ansi.yellow.."[-]";
+		w = ansi.blue.."[w]";
+		n = ansi.red.."[ ]";
+	})..ansi.normal.." ")
+
+	-- Task name
+	print(t.task)
+
+	-- Task data in {key, value} pairs
+	for k,v in pairs(t.data) do
+		io.write(
+			ansi.cyan, "- ", ansi.green,
+			-- Showing UNIX pipe like operation
+			k  :sub(1,1) :upper(),
+			k  :sub(2)   :gsub("_"," "), ansi.normal,
+			": ",
+			v,
+			"\n")
+	end
+	io.write("\n")
+end
